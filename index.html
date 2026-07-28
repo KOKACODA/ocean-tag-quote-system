@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海洋吊牌厂报价查询系统</title>
+<style>
+  :root{
+    --brand:#0f6fc4; --brand-d:#0a4f8a; --brand-l:#e8f2fb;
+    --ink:#1f2d3d; --muted:#6b7a8d; --line:#dde5ee;
+    --bg:#f4f7fb; --card:#ffffff;
+    --shadow:0 6px 20px rgba(15,111,196,.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+  }
+  header.topbar{
+    position:sticky; top:0; z-index:50; background:linear-gradient(120deg,var(--brand),var(--brand-d));
+    color:#fff; padding:12px 18px; display:flex; align-items:center; gap:14px;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+  }
+  .topbar .logo{font-weight:800; font-size:18px; letter-spacing:.5px;}
+  .topbar .home-btn{
+    margin-left:auto; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4);
+    color:#fff; padding:7px 14px; border-radius:8px; cursor:pointer; font-size:14px;
+  }
+  .topbar .home-btn:hover{background:rgba(255,255,255,.28);}
+  main{max-width:1200px; margin:0 auto; padding:22px 18px 60px;}
+
+  /* 首页 */
+  .hero{
+    background:linear-gradient(135deg,#0f6fc4,#0a4f8a); color:#fff;
+    border-radius:18px; padding:28px 26px; box-shadow:var(--shadow); margin-bottom:22px;
+  }
+  .hero h1{margin:0 0 4px; color:#fff; font-size:27px;}
+  .hero .slogan{opacity:.92; font-size:14px; margin-bottom:16px;}
+  .hero .info-pills{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;}
+  .hero .pill{background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.32);
+    padding:6px 13px; border-radius:20px; font-size:12.5px;}
+  .gsearch{display:flex; gap:8px;}
+  .gsearch input{
+    flex:1; padding:12px 16px; border:1px solid var(--line); border-radius:10px;
+    font-size:15px; background:#fff; color:#222;
+  }
+  .gsearch button{
+    padding:12px 22px; border:none; border-radius:10px; background:#ffce3a; color:#5a3b00;
+    font-size:15px; font-weight:800; cursor:pointer;
+  }
+  .gsearch button:hover{background:#ffc107;}
+
+  .section-title{font-size:16px; color:var(--brand-d); margin:6px 4px 14px; font-weight:800;}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;}
+  .nav-card{
+    background:var(--card); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow);
+    cursor:pointer; border:1px solid transparent; transition:.18s; border-left:5px solid var(--brand);
+    display:flex; gap:14px; align-items:flex-start;
+  }
+  .nav-card:hover{transform:translateY(-3px); border-color:var(--brand);}
+  .nav-card .idx{
+    flex-shrink:0; width:38px; height:38px; line-height:38px; text-align:center;
+    background:var(--brand-l); color:var(--brand-d); border-radius:10px; font-weight:800; font-size:16px;
+  }
+  .nav-card .body{flex:1; min-width:0;}
+  .nav-card h3{margin:2px 0 4px; font-size:15px; line-height:1.4;}
+  .nav-card p{margin:0; font-size:12px; color:var(--muted);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .tag-disc{display:inline-block; background:#ffe3e3; color:#e23b3b; border:2px solid #e23b3b;
+    border-radius:14px; font-size:12px; font-weight:800; padding:1px 9px; margin-left:8px;}
+
+  /* 表页 */
+  .crumbs{font-size:13px; color:var(--muted); margin-bottom:12px;}
+  .crumbs b{color:var(--brand-d);}
+  .table-head{
+    position:relative;
+    background:var(--card); border-radius:14px 14px 0 0; padding:18px 18px 12px; box-shadow:var(--shadow);
+  }
+  .table-head h2{margin:0 0 4px; font-size:20px; color:var(--brand-d); padding-right:90px;}
+  .table-head .sub{font-size:13px; color:var(--muted); padding-right:90px;}
+  .discount-badge{
+    position:absolute; top:14px; right:18px;
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:72px; height:72px; padding:6px 16px;
+    border:4px solid #e23b3b; border-radius:50%;
+    color:#e23b3b; font-weight:900; font-size:26px; line-height:1;
+    background:#fff5f5; box-shadow:0 0 0 6px rgba(226,59,59,.10);
+    transform:rotate(-7deg);
+  }
+  .toolbar{display:flex; gap:8px; margin-top:12px;}
+  .toolbar input{
+    flex:1; padding:10px 14px; border:1px solid var(--line); border-radius:10px; font-size:15px;
+  }
+  .toolbar .count{background:var(--brand-l); color:var(--brand-d); padding:10px 14px; border-radius:10px; font-size:13px; white-space:nowrap;}
+
+  .code-jump{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px;}
+  .code-jump .lj-label{width:100%; font-size:12px; color:var(--muted); margin-bottom:2px;}
+  .code-jump button{
+    padding:6px 13px; border:1px solid var(--line); background:var(--brand-l); color:var(--brand-d);
+    border-radius:8px; cursor:pointer; font-size:13px; font-weight:600;
+  }
+  .code-jump button:hover{background:var(--brand); color:#fff;}
+
+  .hl-tip{font-size:12.5px; color:var(--muted); margin-top:12px; display:flex; align-items:center; flex-wrap:wrap; gap:6px;}
+  .hl-clear{border:1px solid var(--line); background:#fff; color:var(--brand-d); border-radius:8px; padding:4px 12px; cursor:pointer; font-size:12px;}
+  .hl-clear:hover{background:var(--brand-l);}
+
+  .table-wrap{background:var(--card); overflow-x:auto; box-shadow:var(--shadow); border-radius:0 0 14px 14px;}
+  table{border-collapse:collapse; width:100%; font-size:13px; min-width:640px;}
+  thead th{
+    background:var(--brand); color:#fff; padding:10px 12px; text-align:center;
+    font-weight:600; white-space:nowrap; cursor:pointer; user-select:none; position:sticky; top:0;
+  }
+  thead th:hover{background:#0a4f8a;}
+  tbody td{padding:9px 12px; border-bottom:1px solid var(--line); text-align:center; vertical-align:middle;}
+  tbody tr:nth-child(even){background:#fafcff;}
+  tbody tr{cursor:pointer;}
+  tbody tr:hover{background:var(--brand-l);}
+  td.spec{font-weight:600; color:var(--brand-d); max-width:200px;}
+  .hl-spec{font-weight:600; color:var(--brand-d);}
+  .sep{color:#e23b3b; font-weight:800; margin:0 2px;}
+  .discount-price{color:#e23b3b; font-weight:800; margin-left:4px;}
+  mark{background:#fff3a3; color:#b3410b; padding:0 2px; border-radius:3px;}
+
+  /* 行列常驻高亮 */
+  .row-hl{background:#fff3a3 !important;}
+  .col-hl{background:#cfe8ff !important;}
+  tr.row-hl td.col-hl{background:#ffd1dc !important;}
+
+  @keyframes flash{0%{background:#fff3a3;}100%{background:transparent;}}
+  tr.flash{animation:flash 1.4s;}
+
+  .pager{display:flex; justify-content:space-between; gap:10px; margin-top:18px;}
+  .pager a{
+    flex:1; text-align:center; text-decoration:none; padding:12px; border-radius:10px;
+    background:var(--card); color:var(--brand); font-weight:600; box-shadow:var(--shadow); border:1px solid var(--line);
+  }
+  .pager a:hover{background:var(--brand-l);}
+  .pager a.disabled{visibility:hidden;}
+
+  .notes{margin-top:14px; background:var(--card); border-radius:12px; padding:14px 18px; box-shadow:var(--shadow); font-size:13px; color:var(--muted);}
+  .notes b{color:var(--ink);}
+  .special{margin-top:14px;}
+  .special h4{margin:0 0 6px; font-size:15px; color:var(--brand-d);}
+
+  .no-result{padding:30px; text-align:center; color:var(--muted);}
+
+  /* 响应式 */
+  @media (max-width:680px){
+    main{padding:14px 10px 50px;}
+    .hero{padding:20px 16px;}
+    .hero h1{font-size:21px;}
+    .grid{grid-template-columns:1fr;}
+    table{min-width:0; font-size:12.5px;}
+    thead{display:none;}
+    table, tbody, tr, td{display:block; width:100%;}
+    tbody tr{background:var(--card); margin:10px 0; border-radius:12px; box-shadow:var(--shadow); border:1px solid var(--line); overflow:hidden;}
+    tbody td{display:flex; justify-content:space-between; align-items:center; text-align:right; border-bottom:1px solid var(--line); padding:9px 14px;}
+    tbody td:last-child{border-bottom:none;}
+    tbody td::before{content:attr(data-label); font-weight:700; color:var(--brand-d); text-align:left;}
+    td.spec{background:var(--brand-l);}
+    .pager{flex-direction:column;}
+    .discount-badge{top:8px; right:10px; min-width:56px; height:56px; font-size:20px; padding:4px 10px;}
+  }
+
+  /* 毛利计算器 */
+  .calc-wrap{background:var(--card); border-radius:14px; padding:20px 22px; box-shadow:var(--shadow);}
+  .calc-wrap h2{margin:0 0 4px; font-size:20px; color:var(--brand-d);}
+  .calc-wrap .sub{font-size:13px; color:var(--muted); margin-bottom:16px;}
+  .coef-chips{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px;}
+  .coef-chips .clabel{width:100%; font-size:13px; color:var(--muted); margin-bottom:2px;}
+  .coef-chip{
+    padding:10px 24px; border:2px solid var(--line); background:#fff; color:var(--brand-d);
+    border-radius:12px; cursor:pointer; font-size:16px; font-weight:800; transition:.15s;
+  }
+  .coef-chip:hover{border-color:var(--brand);}
+  .coef-chip.active{background:var(--brand); color:#fff; border-color:var(--brand);}
+  .calc-input{
+    width:100%; min-height:110px; padding:12px 14px; border:1px solid var(--line); border-radius:10px;
+    font-size:15px; line-height:1.5; resize:vertical; font-family:inherit; color:#222;
+  }
+  .calc-actions{display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap;}
+  .calc-btn{
+    padding:11px 28px; border:none; border-radius:10px; background:var(--brand); color:#fff;
+    font-size:15px; font-weight:800; cursor:pointer;
+  }
+  .calc-btn:hover{background:var(--brand-d);}
+  .calc-clear{
+    padding:11px 18px; border:1px solid var(--line); background:#fff; color:var(--brand-d);
+    border-radius:10px; cursor:pointer; font-size:14px;
+  }
+  .calc-hint{font-size:12.5px; color:var(--muted); margin-left:auto;}
+  .calc-results{margin-top:20px;}
+  .calc-summary{font-size:14px; margin-bottom:10px; color:var(--brand-d); font-weight:700;}
+  .calc-list{display:grid; grid-template-columns:1fr; gap:8px;}
+  .calc-item{
+    display:flex; align-items:center; gap:10px; background:var(--brand-l); border-radius:10px;
+    padding:10px 14px; font-size:14px;
+  }
+  .calc-item .orig{font-weight:700; color:var(--ink); min-width:90px;}
+  .calc-item .op{color:var(--muted);}
+  .calc-item .res{margin-left:auto; font-weight:800; color:#e23b3b; font-size:16px;}
+  .calc-empty{padding:18px; text-align:center; color:var(--muted); background:var(--brand-l); border-radius:10px;}
+  .calc-warn{color:#e23b3b; font-size:13px; margin-top:8px;}
+
+  /* 表页快捷跳转导航 */
+  .quick-nav{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:14px;}
+  .quick-nav .qn-label{font-size:12.5px; color:var(--muted);}
+  .quick-nav select{
+    padding:8px 12px; border:1px solid var(--line); border-radius:9px; font-size:13px; background:#fff; color:var(--ink);
+  }
+  .quick-nav button{
+    padding:8px 14px; border:1px solid var(--line); background:var(--brand-l); color:var(--brand-d);
+    border-radius:9px; cursor:pointer; font-size:13px; font-weight:600;
+  }
+  .quick-nav button:hover{background:var(--brand); color:#fff;}
+  .nav-card.calc-card{border-left-color:#f0883a;}
+  .nav-card.calc-card .idx{background:#fdeee0; color:#d96f1e;}
+
+  @media (max-width:680px){
+    .coef-chip{padding:9px 18px; font-size:15px;}
+    .calc-hint{margin-left:0; width:100%;}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="logo">🏷️ 海洋吊牌厂报价查询</span>
+  <button class="home-btn" style="margin-left:auto;" onclick="goCalc()">🧮 计算器</button>
+  <button class="home-btn" onclick="goHome()">首页</button>
+</header>
+<main id="app"></main>
+
+<script>
+const DATA = [{"title": "报价表 1：350克 A级铜版纸 双面过哑胶（厚度0.38mm）", "subtitle": "快速 2-4天出货 免费圆角异形 | 拼版 2500 张一模 免费啤圆角、异形", "headers": ["代码", "规格单位（毫米）", "500张", "1000张", "2000张", "2500张", "5000张", "1万张", "2万张", "5万张", "代码"], "rows": [["002", "15*110 20*85 25*75 30*50 30*60 35*55 40*45", "20元", "25元", "45元", "50元", "95元", "190元", "350元", "800元", "002"], ["003", "15*130 25*110 30*90 35*75 40*70 45*60 50*55 20*120", "25元", "30元", "55元", "60元", "105元", "200元", "400元", "1000元", "003"], ["004", "20*150 25*130 30*110 35*95 40*85 45*75 50*70 55*65 60*60 40*90 35*100", "30元", "35元", "65元", "70元", "120元", "240元", "480元", "1150元", "004"], ["005", "20*170 25*160 30*135 35*120 40*105 45*95 50*90 55*80 60*70 65*65 45*100", "35元", "40元", "75元", "85元", "150元", "270元", "530元", "1300元", "005"], ["055", "25*180 30*145 35*130 40*120 45*110 50*100 55*95 60*80 65*75 70*70", "40元", "45元", "85元", "90元", "160元", "300元", "580元", "1400元", "055"], ["006", "30*160 35*150 40*135 45*125 50*115 55*105 60*95 65*85 70*80 75*75", "50元", "55元", "95元", "100元", "170元", "340元", "660元", "1600元", "006"], ["007", "30*200 35*180 40*160 45*150 50*140 55*130 60*120 65*110", "60元", "65元", "110元", "125元", "200元", "390元", "750元", "1950元", "007"], ["008", "70*100 75*95 80*90 85*85", "70元", "75元", "125元", "150元", "260元", "500元", "950元", "2300元", "008"], ["009", "35*230 40*200 45*180 50*165 55*150 60*140 65*130 70*120 75*110 80*105 85*100 90*93", "80元", "85元", "145元", "165元", "290元", "560元", "1100元", "2550元", "009"], ["100", "40*230 45*220 50*200 55*180 60*160 65*150 75*140 75*130 80*120 85*110 90*105 95*100", "90元", "95元", "165元", "190元", "330元", "640元", "1250元", "3000元", "100"]], "notes": ["拼版 500 张一模，快速出货为前三种数量。", "备注：价格按展开尺寸计算；单张展开尺寸=长+宽+高+3mm；超出 1000 张另议。"], "special": {"title": "吊牌特殊工艺价格表", "headers": ["工艺", "1000张", "2000张", "3000张", "4000张", "5000张", "10000张", "面积"], "rows": [["无色压凹", "30元", "40元", "50元", "60元", "70元", "130元", "单面"], ["套字压凹", "80元", "90元", "100元", "110元", "120元", "230元", "单面"], ["烫金 小面积", "50元", "60元", "70元", "80元", "90元", "170元", "单面"], ["烫金 小面积", "70元", "80元", "90元", "100元", "120元", "230元", "双面"], ["击凸", "80元", "90元", "100元", "110元", "120元", "230元", "单面"]]}}, {"title": "报价表 2：400克 A级铜版纸 双面过哑胶（厚度0.45mm）", "subtitle": "拼版 1000 张一模 免费啤圆角、异形、可加各种工艺 | 91折", "headers": ["代码", "规格单位（毫米）", "1000张", "2000张", "3000张", "4000张", "5000张", "1万张", "2万张", "5万张", "代码"], "rows": [["002", "15*110 20*85 25*75 30*50 30*60 35*55 40*45", "25元", "45元", "75元", "85元", "120元", "210元", "400元", "900元", "002"], ["003", "15*130 25*110 30*90 35*75 40*70 45*60 50*55 20*120", "35元", "55元", "90元", "105元", "140元", "240元", "460元", "1100元", "003"], ["004", "20*150 25*130 30*110 35*95 40*85 45*75 50*70 55*65 60*60 40*90 35*100", "40元", "70元", "105元", "130元", "170元", "285元", "550元", "1300元", "004"], ["005", "20*170 25*160 30*135 35*120 40*105 45*95 50*90 55*80 60*70 65*65 45*100", "50元", "80元", "130元", "160元", "180元", "310元", "590元", "1400元", "005"], ["055", "25*180 30*145 35*130 40*120 45*110 50*100 55*95 60*80 65*75 70*70", "55元", "90元", "140元", "170元", "190元", "340元", "650元", "1550元", "055"], ["006", "30*160 35*150 40*135 45*125 50*115 55*105 60*95 65*85 70*80 75*75", "65元", "100元", "160元", "190元", "200元", "380元", "720元", "1750元", "006"], ["007", "30*200 35*180 40*160 45*150 50*140 55*130 60*120 65*110", "75元", "120元", "190元", "230元", "240元", "460元", "880元", "2100元", "007"], ["008", "70*100 75*95 80*90 85*85", "90元", "150元", "230元", "280元", "300元", "550元", "1050元", "2500元", "008"], ["009", "35*230 40*200 45*180 50*165 55*150 60*140 65*130 70*120 75*110 80*105 85*100 90*93", "100元", "170元", "260元", "310元", "330元", "620元", "1180元", "2700元", "009"], ["100", "40*230 45*220 50*200 55*180 60*160 65*150 75*140 75*130 80*120 85*110 90*105 95*100", "100元", "170元", "260元", "310元", "330元", "620元", "1180元", "2700元", "100"]], "notes": ["拼版 1000 张一模。", "可免费啤圆角、异形，可加各种工艺。"], "special": {"title": "吊牌特殊工艺价格表", "headers": ["工艺", "1000张", "2000张", "3000张", "4000张", "5000张", "10000张", "面积"], "rows": [["无色压凹", "30元", "40元", "50元", "60元", "70元", "130元", "单面"], ["套字压凹", "80元", "90元", "100元", "110元", "120元", "230元", "单面"], ["烫金 小面积", "50元", "60元", "70元", "80元", "90元", "170元", "单面"], ["烫金 小面积", "70元", "80元", "90元", "100元", "120元", "230元", "双面"], ["击凸", "80元", "90元", "100元", "110元", "120元", "230元", "单面"]]}}, {"title": "报价表 3：702克 A级铜版纸 双面过哑胶（厚度0.85mm）", "subtitle": "拼版彩印 1000、5000 张一模 免费啤圆角 | 哑膜特价", "headers": ["代码", "规格单位（毫米）", "1000张", "2000张", "5000张", "1万张", "2万张", "5万张", "代码"], "rows": [["002", "15*110 20*85 25*75 30*50 30*60 35*55 40*45", "35元", "55元", "115元", "220元", "420元", "1050元", "002"], ["003", "15*130 25*110 30*90 35*75 40*70 45*60 50*55 20*120", "40元", "70元", "135元", "260元", "500元", "1200元", "003"], ["004", "20*150 25*130 30*110 35*95 40*85 45*75 50*70 55*65 60*60 40*90 35*100", "45元", "85元", "165元", "310元", "600元", "1500元", "004"], ["005", "20*170 25*160 30*135 35*120 40*105 45*95 50*90 55*80 60*70 65*65 45*100", "55元", "95元", "180元", "340元", "660元", "1600元", "005"], ["055", "25*180 30*145 35*130 40*120 45*110 50*100 55*95 60*80 65*75 70*70", "65元", "105元", "200元", "380元", "730元", "1800元", "055"], ["006", "30*160 35*150 40*135 45*125 50*115 55*105 60*95 65*85 70*80 75*75", "75元", "115元", "220元", "410元", "800元", "1950元", "006"], ["007", "30*200 35*180 40*160 45*150 50*140 55*130 60*120 65*110", "85元", "140元", "260元", "480元", "960元", "2350元", "007"], ["008", "70*100 75*95 80*90 85*85", "95元", "170元", "310元", "590元", "1180元", "2850元", "008"], ["009", "35*230 40*200 45*180 50*165 55*150 60*140 65*130 70*120 75*110 80*105 85*100 90*93", "105元", "170元", "310元", "590元", "1180元", "2850元", "009"], ["100", "40*230 45*220 50*200 55*180 60*160 65*150 75*140 75*130 80*120 85*110 90*105 95*100", "120元", "185元", "340元", "650元", "1260元", "3000元", "100"]], "notes": ["拼版彩印 1000、5000 张一模，免费啤圆角。"], "special": {"title": "吊牌特殊工艺价格表", "headers": ["工艺", "1000张", "2000张", "3000张", "4000张", "5000张", "10000张", "面积"], "rows": [["无色压凹", "30元", "40元", "50元", "60元", "70元", "130元", "单面"], ["套字压凹", "80元", "90元", "100元", "110元", "120元", "230元", "单面"], ["烫金 小面积", "50元", "60元", "70元", "80元", "90元", "170元", "单面"], ["烫金 小面积", "70元", "80元", "90元", "100元", "120元", "230元", "双面"], ["击凸", "80元", "90元", "100元", "110元", "120元", "230元", "单面"]]}}, {"title": "报价表 4：米白卡 606克（厚度0.8mm）", "subtitle": "快速出货 | 拼版 2500 张一模 黑白图案+浅色彩印 特价压凹", "headers": ["代码", "规格单位（毫米）", "500张", "1000张", "2000张", "2500张", "5000张", "7500张", "1万张", "2万张", "3万张", "5万张", "代码"], "rows": [["002", "15*110 20*85 25*75 30*50 30*60 35*55 40*45", "30元", "40元", "60元", "70元", "135元", "210元", "260元", "500元", "760元", "1250元", "002"], ["003", "15*130 25*110 30*90 35*75 40*70 45*60 50*55 20*120", "35元", "45元", "75元", "85元", "162元", "277元", "308元", "590元", "880元", "1450元", "003"], ["004", "20*150 25*130 30*110 35*95 40*85 45*75 50*70 55*65 60*60 40*90 35*100", "45元", "55元", "95元", "105元", "200元", "305元", "380元", "730元", "1080元", "1780元", "004"], ["005", "20*170 25*160 30*135 35*120 40*105 45*95 50*90 55*80 60*70 65*65 45*100", "55元", "65元", "105元", "115元", "220元", "335元", "420元", "800元", "1150元", "1900元", "005"], ["055", "25*180 30*145 35*130 40*120 45*110 50*100 55*95 60*80 65*75 70*70", "65元", "75元", "115元", "125元", "240元", "365元", "460元", "880元", "1300元", "2150元", "055"], ["006", "30*160 35*150 40*135 45*125 50*115 55*105 60*95 65*85 70*80 75*75", "75元", "85元", "125元", "135元", "260元", "395元", "500元", "950元", "1400元", "2310元", "006"], ["007", "30*200 35*180 40*160 45*150 50*140 55*130 60*120 65*110", "95元", "105元", "155元", "165元", "320元", "485元", "610元", "1160元", "1700元", "2800元", "007"], ["008", "70*100 75*95 80*90 85*85", "105元", "125元", "185元", "195元", "380元", "575元", "730元", "1400元", "2050元", "3400元", "008"], ["009", "35*230 40*200 45*180 50*165 55*150 60*140 65*130 70*120 75*110 80*105 85*100 90*93", "125元", "145元", "205元", "215元", "410元", "625元", "780元", "1500元", "2150元", "3550元", "009"], ["100", "40*230 45*220 50*200 55*180 60*160 65*150 75*140 75*130 80*120 85*110 90*105 95*100", "125元", "145元", "205元", "215元", "410元", "625元", "780元", "1500元", "2150元", "3550元", "100"]], "notes": ["拼版 2500 张一模。", "高端自由定制，啤圆角异形同价。"], "special": {"title": "吊牌特殊工艺价格表", "headers": ["工艺", "1000张", "2000张", "3000张", "4000张", "5000张", "10000张", "面积"], "rows": [["无色压凹", "30元", "40元", "50元", "60元", "70元", "130元", "单面"], ["套字压凹", "80元", "90元", "100元", "110元", "120元", "230元", "单面"], ["烫金 小面积", "50元", "60元", "70元", "80元", "90元", "170元", "单面"], ["烫金 小面积", "70元", "80元", "90元", "100元", "120元", "230元", "双面"], ["击凸", "80元", "90元", "100元", "110元", "120元", "230元", "单面"]]}}, {"title": "报价表 5：500克 白卡纸（厚度0.55mm）正面过哑胶", "subtitle": "正面彩印+背面印黑色字 正面哑胶 背面不过（专版价背面彩印+工艺） | 75折", "headers": ["代码", "规格单位（毫米）", "500张", "1000张", "2000张", "3000张", "4000张", "5000张", "1万张", "2万张", "3万张", "5万张", "代码"], "rows": [["002", "15*110 20*85 25*75 30*50 30*60 35*55 40*45", "25元", "35元", "65元", "90元", "115元", "140元", "265元", "500元", "650元", "1000元", "002"], ["003", "15*130 25*110 30*90 35*75 40*70 45*60 50*55 20*120", "30元", "40元", "75元", "105元", "130元", "170元", "320元", "600元", "850元", "1350元", "003"], ["004", "20*150 25*130 30*110 35*95 40*85 45*75 50*70 55*65 60*60 40*90 35*100", "35元", "45元", "80元", "120元", "150元", "210元", "380元", "720元", "1000元", "1650元", "004"], ["005", "20*170 25*160 30*135 35*120 40*105 45*95 50*90 55*80 60*70 65*65 45*100", "45元", "55元", "100元", "145元", "180元", "220元", "400元", "760元", "1100元", "1800元", "005"], ["055", "25*180 30*145 35*130 40*120 45*110 50*100 55*95 60*80 65*75 70*70", "55元", "65元", "120元", "170元", "215元", "240元", "430元", "820元", "1200元", "2000元", "055"], ["006", "30*160 35*150 40*135 45*125 50*115 55*105 60*95 65*85 70*80 75*75", "65元", "75元", "135元", "195元", "245元", "280元", "480元", "910元", "1350元", "2200元", "006"], ["007", "30*200 35*180 40*160 45*150 50*140 55*130 60*120 65*110", "75元", "85元", "160元", "230元", "280元", "320元", "570元", "1090元", "1550元", "2550元", "007"], ["008", "70*100 75*95 80*90 85*85", "85元", "95元", "170元", "230元", "280元", "320元", "570元", "1090元", "1550元", "2550元", "008"], ["009", "35*230 40*200 45*180 50*165 55*150 60*140 65*130 70*120 75*110 80*105 85*100 90*93", "90元", "100元", "180元", "270元", "330元", "380元", "700元", "1330元", "1900元", "3100元", "009"], ["100", "40*230 45*220 50*200 55*180 60*160 65*150 75*140 75*130 80*120 85*110 90*105 95*100", "100元", "110元", "200元", "300元", "365元", "430元", "800元", "1500元", "2100元", "3300元", "100"]], "notes": ["正面彩印+背面印黑色字，正面哑胶，背面不过。"], "special": {"title": "吊牌特殊工艺价格表", "headers": ["工艺", "1000张", "2000张", "3000张", "4000张", "5000张", "10000张", "面积"], "rows": [["无色压凹", "30元", "40元", "50元", "60元", "70元", "130元", "单面"], ["套字压凹", "80元", "90元", "100元", "110元", "120元", "230元", "单面"], ["烫金 小面积", "50元", "60元", "70元", "80元", "90元", "170元", "单面"], ["烫金 小面积", "70元", "80元", "90元", "100元", "120元", "230元", "双面"], ["击凸", "80元", "90元", "100元", "110元", "120元", "230元", "单面"]]}}, {"title": "报价表 6：400克米白卡 / 160克半透卡 / 200克合成纸（海成专用 / 撕不烂）", "subtitle": "含正面印黑色字+免费啤圆角 加钱烫金工艺；含正面四色彩印+背面印黑色字 免费啤圆角 | 7.5折", "headers": ["代码", "规格单位（毫米）", "1000张", "2000张", "3000张", "4000张", "5000张", "1万张", "2万张", "代码"], "rows": [["002", "15*110 20*85 25*75 30*50 30*60 35*55 40*45", "40元", "72元", "105元", "132元", "160元", "305元", "578元", "002"], ["003", "15*130 25*110 30*90 35*75 40*70 45*60 50*55 20*120", "50元", "90元", "130元", "165元", "200元", "380元", "720元", "003"], ["004", "20*150 25*130 30*110 35*95 40*85 45*75 50*70 55*65 60*60 40*90 35*100", "58元", "105元", "150元", "190元", "230元", "437元", "830元", "004"], ["005", "20*170 25*160 30*135 35*120 40*105 45*95 50*90 55*80 60*70 65*65 45*100", "65元", "116元", "170元", "215元", "260元", "494元", "938元", "005"], ["055", "25*180 30*145 35*130 40*120 45*110 50*100 55*95 60*80 65*75 70*70", "75元", "135元", "195元", "248元", "300元", "570元", "1083元", "055"], ["006", "30*160 35*150 40*135 45*125 50*115 55*105 60*95 65*85 70*80 75*75", "85元", "153元", "220元", "280元", "340元", "646元", "1228元", "006"], ["007", "30*200 35*180 40*160 45*150 50*140 55*130 60*120 65*110", "95元", "170元", "246元", "313元", "380元", "720元", "1368元", "007"], ["008", "70*100 75*95 80*90 85*85", "110元", "198元", "285元", "363元", "450元", "855元", "1625元", "008"], ["009", "35*230 40*200 45*180 50*165 55*150 60*140 65*130 70*120 75*110 80*105 85*100 90*93", "120元", "216元", "310元", "400元", "500元", "950元", "1805元", "009"], ["100", "40*230 45*220 50*200 55*180 60*160 65*150 75*140 75*130 80*120 85*110 90*105 95*100", "120元", "216元", "310元", "400元", "500元", "950元", "1805元", "100"]], "notes": ["代码006（含）以下为公司名称标志等小面积烫金。", "007以上或大面积烫金每1000个加10元；整版烫金、立体凹凸请咨询工厂报价。"], "special": {"title": "吊牌特殊工艺价格表", "headers": ["工艺", "1000张", "2000张", "3000张", "4000张", "5000张", "10000张", "面积"], "rows": [["烫金 小面积", "50元", "60元", "70元", "80元", "90元", "170元", "单面"], ["烫金 小面积", "70元", "80元", "90元", "100元", "120元", "230元", "双面"], ["凹凸", "40元", "60元", "90元", "120元", "150元", "300元", "单张"]]}}, {"title": "报价表 7：700克 A级布纹纸 双面过光油（厚度0.85mm）", "subtitle": "压布纹（网店莱尼纹）拼版 1000 张一模 各种工艺 | 布纹特价", "headers": ["代码", "规格单位（毫米）", "1000张", "2000张", "3000张", "4000张", "5000张", "1万张", "2万张", "代码"], "rows": [["002", "15*110 20*85 25*75 30*50 30*60 35*55 40*45", "35元", "63元", "91元", "112元", "125元", "230元", "440元", "002"], ["003", "15*130 25*110 30*90 35*75 40*70 45*60 50*55 20*120", "42元", "77元", "120元", "150元", "160元", "305元", "580元", "003"], ["004", "20*150 25*130 30*110 35*95 40*85 45*75 50*70 55*65 60*60 40*90 35*100", "50元", "90元", "140元", "175元", "200元", "380元", "720元", "004"], ["005", "20*170 25*160 30*135 35*120 40*105 45*95 50*90 55*80 60*70 65*65 45*100", "60元", "108元", "168元", "205元", "220元", "410元", "780元", "005"], ["055", "25*180 30*145 35*130 40*120 45*110 50*100 55*95 60*80 65*75 70*70", "66元", "115元", "175元", "220元", "240元", "450元", "850元", "055"], ["006", "30*160 35*150 40*135 45*125 50*115 55*105 60*95 65*85 70*80 75*75", "73元", "122元", "189元", "240元", "260元", "500元", "950元", "006"], ["007", "30*200 35*180 40*160 45*150 50*140 55*130 60*120 65*110", "90元", "154元", "231元", "290元", "320元", "600元", "1150元", "007"], ["008", "70*100 75*95 80*90 85*85", "112元", "175元", "266元", "330元", "400元", "760元", "1450元", "008"], ["009", "35*230 40*200 45*180 50*165 55*150 60*140 65*130 70*120 75*110 80*105 85*100 90*93", "130元", "203元", "315元", "378元", "450元", "850元", "1650元", "009"], ["100", "40*230 45*220 50*200 55*180 60*160 65*150 75*140 75*130 80*120 85*110 90*105 95*100", "130元", "203元", "315元", "378元", "450元", "850元", "1650元", "100"]], "notes": ["工艺报价表为代码006（含）以下公司名称标志等小面积烫金。", "代码007（含）以上或整版大面积烫金、凹凸，每1000个加10元；整版烫金、立体凹凸等咨询工厂报价。"], "special": {"title": "吊牌特殊工艺价格表", "headers": ["工艺", "1000张", "2000张", "3000张", "4000张", "5000张", "10000张", "备注"], "rows": [["烫金 小面积", "90元", "110元", "130元", "140元", "160元", "200元", "单面"], ["烫金 小面积", "110元", "130元", "150元", "160元", "200元", "240元", "双面"], ["凹凸", "110元", "120元", "130元", "140元", "150元", "200元", "相配加急另计"], ["鸡眼", "40元", "60元", "90元", "120元", "150元", "300元", ""], ["无色压凹", "110元", "120元", "130元", "140元", "150元", "200元", "单面"], ["深凹烫金", "110元", "120元", "130元", "140元", "150元", "200元", "单面"]]}}, {"title": "报价表 8：600克 A级牛皮纸（厚度0.80mm）", "subtitle": "一含：双面印黑色字免费圆角异形、可加钱丝印白色、打鸡眼；二含：双面彩印免费圆角异形、可加钱做各种工艺 | 7.5折", "headers": ["代码", "规格单位（毫米）", "1000张", "2000张", "3000张", "4000张", "5000张", "1万张", "2万张", "代码"], "rows": [["002", "15*110 20*85 25*75 30*50 30*60 35*55 40*45", "60元", "110元", "155元", "195元", "230元", "437元", "830元", "002"], ["003", "15*130 25*110 30*90 35*75 40*70 45*60 50*55 20*120", "70元", "126元", "182元", "230元", "270元", "513元", "975元", "003"], ["004", "20*150 25*130 30*110 35*95 40*85 45*75 50*70 55*65 60*60 40*90 35*100", "80元", "145元", "208元", "265元", "310元", "589元", "1120元", "004"], ["005", "20*170 25*160 30*135 35*120 40*105 45*95 50*90 55*80 60*70 65*65 45*100", "95元", "170元", "245元", "313元", "370元", "703元", "1335元", "005"], ["055", "25*180 30*145 35*130 40*120 45*110 50*100 55*95 60*80 65*75 70*70", "105元", "190元", "273元", "345元", "410元", "779元", "1480元", "055"], ["006", "30*160 35*150 40*135 45*125 50*115 55*105 60*95 65*85 70*80 75*75", "115元", "205元", "300元", "380元", "450元", "855元", "1625元", "006"], ["007", "30*200 35*180 40*160 45*150 50*140 55*130 60*120 65*110", "145元", "260元", "375元", "475元", "560元", "1064元", "2022元", "007"], ["008", "70*100 75*95 80*90 85*85", "170元", "306元", "440元", "550元", "660元", "1254元", "2383元", "008"], ["009", "35*230 40*200 45*180 50*165 55*150 60*140 65*130 70*120 75*110 80*105 85*100 90*93", "190元", "340元", "495元", "620元", "740元", "1406元", "2672元", "009"], ["100", "40*230 45*220 50*200 55*180 60*160 65*150 75*140 75*130 80*120 85*110 90*105 95*100", "190元", "340元", "495元", "620元", "740元", "1406元", "2672元", "100"]], "notes": ["双面印黑色字免费圆角异形，可加钱丝印白色、打鸡眼。", "双面彩印免费圆角异形，可加钱做各种工艺。"], "special": {"title": "吊牌特殊工艺价格表", "headers": ["工艺", "1000张", "2000张", "3000张", "4000张", "5000张", "10000张", "面积"], "rows": [["烫金 小面积", "50元", "60元", "70元", "80元", "90元", "170元", "单面"], ["烫金 小面积", "70元", "80元", "90元", "100元", "120元", "230元", "双面"], ["凹凸", "80元", "90元", "100元", "110元", "120元", "230元", "相配加急另计"], ["鸡眼", "40元", "60元", "90元", "120元", "150元", "300元", ""], ["丝印白", "30元", "40元", "50元", "60元", "70元", "130元", "单面"], ["丝印白", "50元", "60元", "70元", "90元", "90元", "160元", "双面"]]}}, {"title": "报价表 9：棉麻布 40C 米白色", "subtitle": "含：单面印黑色字免费圆角异形、可加钱专色和黑白图案 | 7.5折", "headers": ["代码", "规格单位（毫米）", "1000张", "2000张", "3000张", "4000张", "5000张", "1万张", "代码"], "rows": [["002", "15*110 20*85 25*75 30*50 30*60 35*55 40*45", "90元", "160元", "235元", "300元", "360元", "680元", "002"], ["003", "15*130 25*110 30*90 35*75 40*70 45*60 50*55 20*120", "100元", "180元", "260元", "330元", "400元", "760元", "003"], ["004", "20*150 25*130 30*110 35*95 40*85 45*75 50*70 55*65 60*60 40*90 35*100", "110元", "200元", "290元", "365元", "440元", "830元", "004"], ["005", "20*170 25*160 30*135 35*120 40*105 45*95 50*90 55*80 60*70 65*65 45*100", "120元", "220元", "315元", "400元", "480元", "880元", "005"], ["055", "25*180 30*145 35*130 40*120 45*110 50*100 55*95 60*80 65*75 70*70", "130元", "235元", "340元", "430元", "520元", "950元", "055"], ["006", "30*160 35*150 40*135 45*125 50*115 55*105 60*95 65*85 70*80 75*75", "140元", "255元", "370元", "460元", "560元", "1000元", "006"], ["007", "30*200 35*180 40*160 45*150 50*140 55*130 60*120 65*110", "160元", "290元", "420元", "530元", "640元", "1150元", "007"], ["008", "70*100 75*95 80*90 85*85", "200元", "360元", "520元", "660元", "800元", "1400元", "008"], ["009", "35*230 40*200 45*180 50*165 55*150 60*140 65*130 70*120 75*110 80*105 85*100 90*93", "200元", "360元", "520元", "660元", "800元", "1400元", "009"], ["100", "40*230 45*220 50*200 55*180 60*160 65*150 75*140 75*130 80*120 85*110 90*105 95*100", "260元", "470元", "680元", "860元", "1050元", "1900元", "100"]], "notes": ["啤圆角异形同价。", "本报价表不含税，可按国家相关规定：客户加相应的税点开具发票。", "发布日期：2026年6月1号。"], "special": {"title": "吊牌特殊工艺价格表", "headers": ["工艺", "1000张", "2000张", "3000张", "4000张", "5000张", "10000张", "面积"], "rows": [["专色", "90元", "120元", "150元", "180元", "200元", "300元", "单面"], ["黑白图案", "30元", "50元", "70元", "90元", "120元", "200元", "单面"], ["红色", "30元", "50元", "70元", "90元", "120元", "200元", "单面"]]}}];
+const FACTORY = {
+  addr:"厂址：广东省佛山市南海区桂城街道三山科能路10号502车间",
+  tel:"电话/微信：13729828716（办公室） 18028601414（刘生）",
+  qq:"QQ：52208477 、 2577875789"
+};
+
+let currentRate = 1;   // 当前表的折扣率（无折扣=1）
+let calcCoef = 1.3;    // 毛利计算器当前系数
+
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function highlight(text, kw){
+  text = String(text);
+  if(!kw) return esc(text);
+  const re = new RegExp("("+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+")","gi");
+  return esc(text).replace(re, "<mark>$1</mark>");
+}
+function isMobile(){ return window.matchMedia('(max-width:680px)').matches; }
+function rowHit(r, kw){ if(!kw) return true; return r.some(c=>String(c).includes(kw)); }
+function extractDiscount(sub){
+  if(!sub) return "";
+  const m = sub.match(/(\d+(?:\.\d+)?\s*折)/);
+  return m ? m[1].replace(/\s+/g,'') : "";
+}
+// 折扣率：91折->0.91, 75折->0.75, 7.5折->0.75
+function discRate(d){
+  const m = String(d||'').match(/([\d.]+)/);
+  if(!m) return 1;
+  const n = parseFloat(m[1]);
+  return n>=10 ? n/100 : n/10;
+}
+function priceOf(txt){ const m=String(txt).match(/([\d.]+)/); return m?parseFloat(m[1]):null; }
+function fmtV(v){ return (Math.round(v*100)/100).toString(); }
+
+/* 行列常驻高亮 + 折扣表折后价计算 */
+function toggleRow(tr){ tr.classList.toggle('row-hl'); refreshDiscounts(); }
+function toggleCol(ci){
+  const tbl = document.querySelector('.table-wrap table');
+  if(!tbl) return;
+  const key = 'col'+ci;
+  const on = tbl.dataset[key] === '1';
+  tbl.querySelectorAll('tbody tr').forEach(tr=>{
+    const td = tr.children[ci];
+    if(td) td.classList.toggle('col-hl', !on);
+  });
+  tbl.dataset[key] = on ? '0' : '1';
+  refreshDiscounts();
+}
+function clearHL(){
+  document.querySelectorAll('.row-hl').forEach(e=>e.classList.remove('row-hl'));
+  document.querySelectorAll('.col-hl').forEach(e=>e.classList.remove('col-hl'));
+  document.querySelectorAll('.table-wrap table').forEach(t=>{ t.dataset = {}; });
+  refreshDiscounts();
+}
+// 仅对“已被高亮的单元格 + 当前表有折扣”计算并显示【折后价】
+function refreshDiscounts(){
+  const tbl = document.querySelector('.table-wrap table');
+  if(!tbl || currentRate===1) return;
+  tbl.querySelectorAll('tbody td[data-price]').forEach(td=>{
+    const rowOn = td.parentElement.classList.contains('row-hl');
+    const colOn = td.classList.contains('col-hl');
+    const orig = td.getAttribute('data-orig') || '';
+    if(rowOn || colOn){
+      const p = parseFloat(td.getAttribute('data-price'));
+      const v = Math.round(p * currentRate * 100) / 100;
+      td.innerHTML = esc(orig) + '<span class="discount-price">【'+fmtV(v)+'】</span>';
+    } else {
+      td.innerHTML = esc(orig);
+    }
+  });
+}
+
+function goHome(){ location.hash = "#/"; }
+
+function goCalc(){ location.hash = "#/calc"; }
+
+/* 表页快捷跳转导航（首页 / 计算器 / 任意表下拉） */
+function quickNavHtml(cur){
+  const opts = DATA.map((t,i)=>`<option value="${i}" ${i===cur?'selected':''}>报价表 ${i+1}</option>`).join("");
+  return `<div class="quick-nav">
+    <span class="qn-label">快捷跳转：</span>
+    <select onchange="if(this.value!=='')goTable(parseInt(this.value))">
+      <option value="" disabled ${cur<0?'selected':''}>选择报价表…</option>
+      ${opts}
+    </select>
+    <button onclick="goHome()">🏠 首页</button>
+    <button onclick="goCalc()">🧮 毛利计算器</button>
+  </div>`;
+}
+
+/* 毛利计算器 */
+function renderCalc(){
+  document.getElementById("app").innerHTML = `
+    <div class="crumbs">首页 / <b>毛利计算器</b></div>
+    <div class="calc-wrap">
+      <h2>🧮 毛利计算器</h2>
+      <div class="sub">输入多个数值，按所选系数批量计算。分隔符支持：空格、英文逗号(,)、中文逗号(，)、顿号(、)，可混用。</div>
+      <div class="coef-chips">
+        <span class="clabel">选择毛利系数：</span>
+        <div class="coef-chip ${calcCoef===1.2?'active':''}" onclick="setCoef(1.2)">× 1.2</div>
+        <div class="coef-chip ${calcCoef===1.3?'active':''}" onclick="setCoef(1.3)">× 1.3</div>
+        <div class="coef-chip ${calcCoef===1.4?'active':''}" onclick="setCoef(1.4)">× 1.4</div>
+      </div>
+      <textarea id="calcInput" class="calc-input" placeholder="例如：234 345 235&#10;也可：234,345,235&#10;或：234，345，235">234 345 235</textarea>
+      <div class="calc-actions">
+        <button class="calc-btn" onclick="calcRun()">计算</button>
+        <button class="calc-clear" onclick="document.getElementById('calcInput').value='';document.getElementById('calcResults').innerHTML='';">清空</button>
+        <span class="calc-hint">系数 × 1.3 ≈ 毛利率 23%；× 1.4 ≈ 29%</span>
+      </div>
+      <div class="calc-results" id="calcResults"></div>
+    </div>`;
+  calcRun();   // 默认示例直接计算，便于即时查看
+}
+
+function setCoef(v){
+  calcCoef = v;
+  const vals = [1.2,1.3,1.4];
+  document.querySelectorAll('.coef-chip').forEach((c,idx)=>{
+    if(Math.abs(vals[idx]-calcCoef)<1e-9) c.classList.add('active');
+    else c.classList.remove('active');
+  });
+  if(document.getElementById('calcResults').innerHTML.trim()!=='') calcRun();
+}
+
+function fmtNum(v){ return (Math.round(v*100)/100).toString(); }
+
+function calcRun(){
+  const box = document.getElementById('calcResults');
+  if(!box) return;
+  const raw = document.getElementById('calcInput').value;
+  const parts = raw.split(/[\s,，、]+/).map(s=>s.trim()).filter(s=>s!=='');
+  if(parts.length===0){
+    box.innerHTML = `<div class="calc-empty">请输入至少一个数值</div>`;
+    return;
+  }
+  let warn = "";
+  let valid = 0;
+  const items = [];
+  for(const s of parts){
+    const n = parseFloat(s);
+    if(isNaN(n)){ warn += `“${esc(s)}” 不是有效数字，已跳过；`; continue; }
+    valid++;
+    items.push(n);
+  }
+  let sumO=0, sumR=0;
+  const rows = items.map(n=>{
+    const r = n*calcCoef;
+    sumO += n; sumR += r;
+    return `<div class="calc-item">
+      <span class="orig">${fmtNum(n)}</span>
+      <span class="op">× ${fmtNum(calcCoef)}</span>
+      <span class="res">= ${fmtNum(r)}</span>
+    </div>`;
+  }).join("");
+  let html = `<div class="calc-summary">共 ${valid} 个有效数值 · 系数 × ${fmtNum(calcCoef)}</div>`;
+  html += `<div class="calc-list">${rows}</div>`;
+  if(valid>0) html += `<div class="calc-summary" style="margin-top:12px;">合计：原值 ${fmtNum(sumO)} → 结果 ${fmtNum(sumR)}</div>`;
+  if(warn) html += `<div class="calc-warn">⚠️ ${esc(warn)}</div>`;
+  box.innerHTML = html;
+}
+
+function renderHome(){
+  let cards = DATA.map((t,i)=>{
+    const disc = extractDiscount(t.subtitle);
+    const subClean = (t.subtitle||'').replace(disc,'').replace(/[|\s]+$/,'');
+    return `<div class="nav-card" onclick="goTable(${i})">
+      <span class="idx">${i+1}</span>
+      <div class="body">
+        <h3>${esc(t.title)}${disc?`<span class="tag-disc">${esc(disc)}</span>`:""}</h3>
+        <p>${esc(subClean.slice(0,36))}</p>
+      </div>
+    </div>`;
+  }).join("");
+  document.getElementById("app").innerHTML = `
+    <div class="hero">
+      <h1>海洋吊牌厂 · 报价快速查询</h1>
+      <div class="slogan">9 张报价表 · 一键搜索 · 代码快速跳转 · 行列高亮 · 折扣自动计算 · 🧮 毛利计算器</div>
+      <div class="info-pills">
+        <span class="pill">${esc(FACTORY.addr)}</span>
+        <span class="pill">${esc(FACTORY.tel)}</span>
+        <span class="pill">${esc(FACTORY.qq)}</span>
+      </div>
+      <div class="gsearch">
+        <input id="gsearch" placeholder="🔍 全局搜索：代码 / 规格 / 价格…" onkeydown="if(event.key==='Enter')doGlobalSearch()">
+        <button onclick="doGlobalSearch()">搜索</button>
+      </div>
+    </div>
+    <div class="section-title">报价表导航（点击进入）</div>
+    <div class="grid">${cards}</div>
+    <div class="section-title">实用工具</div>
+    <div class="grid">
+      <div class="nav-card calc-card" onclick="goCalc()">
+        <span class="idx">🧮</span>
+        <div class="body">
+          <h3>毛利计算器</h3>
+          <p>批量 ×系数(1.2/1.3/1.4) · 支持空格/中英文逗号分隔</p>
+        </div>
+      </div>
+    </div>`;
+  const g = document.getElementById("gsearch");
+  if(g) g.focus();
+}
+
+function doGlobalSearch(){
+  const kw = document.getElementById("gsearch").value.trim();
+  if(!kw){ goHome(); return; }
+  for(let i=0;i<DATA.length;i++){
+    const hit = DATA[i].rows.some(r=>rowHit(r,kw));
+    if(hit){ location.hash = "#/t/"+i+"/"+encodeURIComponent(kw); return; }
+  }
+  alert("未找到匹配：“"+kw+"”");
+}
+
+function goTable(i, kw){ location.hash = "#/t/"+i+(kw?("/"+encodeURIComponent(kw)):""); }
+
+function buildBody(t, kw){
+  const headers = t.headers;
+  let html = "";
+  let shown = 0;
+  for(const r of t.rows){
+    if(!rowHit(r, kw)) continue;
+    shown++;
+    const specs = String(r[1]).split();
+    const specHtml = specs.map(s=>`<span class="hl-spec">${highlight(s,kw)}</span>`).join('<span class="sep">；</span>');
+    html += `<tr id="code-${esc(r[0])}" onclick="toggleRow(this)">`;
+    for(let ci=0; ci<headers.length; ci++){
+      const cls = (ci===1)?"spec":"";
+      const isPrice = (ci!==0 && ci!==1 && headers[ci]!=="代码");
+      if(isPrice){
+        const p = priceOf(r[ci]);
+        html += `<td class="${cls}" data-label="${esc(headers[ci])}" data-price="${p}" data-orig="${esc(r[ci])}">${highlight(r[ci],kw)}</td>`;
+      } else {
+        const val = (ci===1)?specHtml:highlight(r[ci],kw);
+        html += `<td class="${cls}" data-label="${esc(headers[ci])}">${val}</td>`;
+      }
+    }
+    html += "</tr>";
+  }
+  if(shown===0){
+    html = `<tr><td colspan="${headers.length}" class="no-result">未找到匹配“${esc(kw)}”的记录</td></tr>`;
+  }
+  return {html, shown};
+}
+
+function renderTable(i, kw){
+  const t = DATA[i];
+  const headers = t.headers;
+  const kwDec = kw ? decodeURIComponent(kw) : "";
+  const {html, shown} = buildBody(t, kwDec);
+  const disc = extractDiscount(t.subtitle);
+  currentRate = discRate(disc);   // 设定当前表折扣率
+
+  const codes = [];
+  for(const r of t.rows){ if(!codes.includes(r[0])) codes.push(r[0]); }
+  const jumpBtns = codes.map(c=>`<button onclick="jumpToCode('${esc(c)}')">${esc(c)}</button>`).join("");
+
+  let notes = (t.notes||[]).map(n=>`<li>${esc(n)}</li>`).join("");
+  let special = "";
+  if(t.special){
+    const sh = t.special.headers;
+    const srows = t.special.rows.map(r=>"<tr>"+r.map((c,ci)=>`<td data-label="${esc(sh[ci])}">${esc(c)}</td>`).join("")+"</tr>").join("");
+    special = `<div class="special"><h4>${esc(t.special.title)}</h4>
+      <div class="table-wrap"><table><thead><tr>${sh.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead>
+      <tbody>${srows}</tbody></table></div></div>`;
+  }
+
+  const prev = i>0 ? `<a href="#/t/${i-1}">← 上一表（报价表 ${i}）</a>` : `<a class="disabled">← 上一表</a>`;
+  const next = i<DATA.length-1 ? `<a href="#/t/${i+1}">下一表（报价表 ${i+2}）→</a>` : `<a class="disabled">下一表 →</a>`;
+
+  document.getElementById("app").innerHTML = `
+    <div class="crumbs">首页 / <b>报价表 ${i+1}</b> / 共 ${DATA.length} 张表</div>
+    <div class="table-head">
+      <h2>${esc(t.title)}</h2>
+      <div class="sub">${esc(t.subtitle||'')}</div>
+      ${disc?`<div class="discount-badge">${esc(disc)}</div>`:""}
+      <div class="toolbar">
+        <input id="search" placeholder="🔍 在当前表搜索关键词…" value="${esc(kwDec)}" oninput="onSearch(${i}, this.value)">
+        <span class="count">${shown} / ${t.rows.length} 行（代码）</span>
+      </div>
+      <div class="code-jump"><span class="lj-label">代码快速跳转：</span>${jumpBtns}</div>
+      <div class="hl-tip">💡 点击表头高亮整列 · 点击任意行高亮整行 · 有折扣的表高亮后自动显示【折后价】· <button class="hl-clear" onclick="clearHL()">清除高亮</button></div>
+    </div>
+    ${quickNavHtml(i)}
+    <div class="table-wrap">
+      <table><thead><tr>${headers.map((h,ci)=>`<th onclick="toggleCol(${ci})" title="点击高亮整列：${esc(h)}">${esc(h)}</th>`).join("")}</tr></thead>
+      <tbody>${html}</tbody></table>
+    </div>
+    ${notes?`<div class="notes"><b>说明：</b><ul style="margin:6px 0 0;padding-left:20px;">${notes}</ul></div>`:''}
+    ${special}
+    <div class="pager">${prev}${next}</div>`;
+  const s = document.getElementById("search");
+  if(s && !kwDec) s.focus();
+}
+
+function jumpToCode(code){
+  const el = document.getElementById("code-"+code);
+  if(!el) return;
+  el.scrollIntoView({behavior:"smooth", block:"center"});
+  el.classList.remove("flash");
+  void el.offsetWidth;
+  el.classList.add("flash");
+}
+
+function onSearch(i, val){ location.hash = "#/t/"+i+(val.trim()?("/"+encodeURIComponent(val.trim())):""); }
+
+let rsTimer = null;
+window.addEventListener("resize", ()=>{
+  clearTimeout(rsTimer);
+  rsTimer = setTimeout(()=>{ if(location.hash.startsWith("#/t/")) router(); }, 250);
+});
+
+function router(){
+  const h = location.hash || "#/";
+  const parts = h.replace(/^#\//,"").split("/");
+  if(parts[0]==="" || parts[0]==="home"){ renderHome(); return; }
+  if(parts[0]==="calc"){ renderCalc(); return; }
+  if(parts[0]==="t"){
+    const i = parseInt(parts[1],10);
+    const kw = parts[2]||"";
+    if(!isNaN(i) && i>=0 && i<DATA.length){ renderTable(i, kw); return; }
+  }
+  renderHome();
+}
+
+window.addEventListener("hashchange", router);
+if(document.readyState!=="loading") router();
+else window.addEventListener("DOMContentLoaded", router);
+</script>
+</body>
+</html>
