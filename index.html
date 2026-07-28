@@ -332,14 +332,14 @@ function renderCalc(){
     <div class="crumbs">首页 / <b>毛利计算器</b></div>
     <div class="calc-wrap">
       <h2>🧮 毛利计算器</h2>
-      <div class="sub">输入多个数值，按所选系数批量计算。分隔符支持：空格、英文逗号(,)、中文逗号(，)、顿号(、)，可混用。</div>
+      <div class="sub">输入多个数值，按所选系数批量计算。分隔符支持：空格、英文逗号(,)、中文逗号(，)、顿号(、)、加号(+)，可混用。</div>
       <div class="coef-chips">
         <span class="clabel">选择毛利系数：</span>
         <div class="coef-chip ${calcCoef===1.2?'active':''}" onclick="setCoef(1.2)">× 1.2</div>
         <div class="coef-chip ${calcCoef===1.3?'active':''}" onclick="setCoef(1.3)">× 1.3</div>
         <div class="coef-chip ${calcCoef===1.4?'active':''}" onclick="setCoef(1.4)">× 1.4</div>
       </div>
-      <textarea id="calcInput" class="calc-input" placeholder="例如：234 345 235&#10;也可：234,345,235&#10;或：234，345，235">234 345 235</textarea>
+      <textarea id="calcInput" class="calc-input" placeholder="例如：234 345 235&#10;也可：234,345,235&#10;或：234，345，235&#10;或：234+345+235">234 345 235</textarea>
       <div class="calc-actions">
         <button class="calc-btn" onclick="calcRun()">计算</button>
         <button class="calc-clear" onclick="document.getElementById('calcInput').value='';document.getElementById('calcResults').innerHTML='';">清空</button>
@@ -366,7 +366,7 @@ function calcRun(){
   const box = document.getElementById('calcResults');
   if(!box) return;
   const raw = document.getElementById('calcInput').value;
-  const parts = raw.split(/[\s,，、]+/).map(s=>s.trim()).filter(s=>s!=='');
+  const parts = raw.split(/[\s,，、+]+/).map(s=>s.trim()).filter(s=>s!=='');
   if(parts.length===0){
     box.innerHTML = `<div class="calc-empty">请输入至少一个数值</div>`;
     return;
